@@ -1,0 +1,31 @@
+{
+  "name": "bespoke-support/os-postcode-import",
+  "description": "Importer for Postcode Database",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Richard Seymour",
+      "email": "web@bespoke.support"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "BespokeSupport\\OSImporter\\": ["src/"]
+    }
+  },
+  "require": {
+    "symfony/console": "v2.6.4",
+    "kriswallsmith/buzz": "v0.13",
+    "zendframework/zend-db": "2.3.4",
+    "zendframework/zend-eventmanager": "2.3.4",
+    "php-coord/php-coord": "~1",
+    "bespoke-support/location" : "*",
+    "academe/osgb-tools" : "dev-composer-ready#2ac1af8417c16140a310a2ee3e8e9de7df924eda"
+  },
+  "repositories": [
+    {
+      "url" : "https://github.com/BespokeSupport/osgb-tools.git",
+      "type" :"git"
+    }
+  ]
+}

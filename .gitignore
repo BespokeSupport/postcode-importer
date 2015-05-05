@@ -1,0 +1,16 @@
+.idea/
+composer.lock
+vendor/
+
+# Code Point Files
+Data/*
+Doc/*
+Documents/*
+codepo*
+ONSPD*
+
+# GeoJSON
+/*.json
+
+# configs
+config.yml
