@@ -13,6 +13,7 @@
       "BespokeSupport\\OSImporter\\": ["src/"]
     }
   },
+  "minimum-stability": "dev",
   "require": {
     "symfony/console": "v2.6.4",
     "kriswallsmith/buzz": "v0.13",
