@@ -19,13 +19,7 @@
     "zendframework/zend-db": "2.3.4",
     "zendframework/zend-eventmanager": "2.3.4",
     "php-coord/php-coord": "~1",
-    "bespoke-support/location" : "*",
-    "academe/osgb-tools" : "dev-composer-ready#2ac1af8417c16140a310a2ee3e8e9de7df924eda"
-  },
-  "repositories": [
-    {
-      "url" : "https://github.com/BespokeSupport/osgb-tools.git",
-      "type" :"git"
-    }
-  ]
+    "bespoke-support/location": "0.1",
+    "bespoke-support/osgb-tools": "0.2"
+  }
 }
