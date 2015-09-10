@@ -15,7 +15,7 @@
   },
   "minimum-stability": "dev",
   "require": {
-    "symfony/console": "v2.6.4",
+    "symfony/console": "~2.6",
     "kriswallsmith/buzz": "v0.13",
     "zendframework/zend-db": "2.3.4",
     "zendframework/zend-eventmanager": "2.3.4",
