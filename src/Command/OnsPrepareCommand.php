@@ -30,7 +30,7 @@ class OnsPrepareCommand extends Command
             $output->writeln('<info>Ending ONS ZIP Download</info>');
         }
 
-        if (!file_exists(str_replace('_multi_csv.zip', '_UK_metadata.xml',$onsFile))){
+        if (!file_exists(str_replace(POSTCODE_ONS_SUFFIX, '_UK_metadata.xml',$onsFile))){
             $output->writeln("<info>Extracting $onsFile</info>");
             $zip = new \ZipArchive();
             $zip->open($onsFile);
@@ -43,6 +43,7 @@ class OnsPrepareCommand extends Command
             'dbname' => 'information',
             'username' => 'root'
         ]);
+
         $tablePostcodes = new TableGateway('postcodes', $databaseAdapter);
         $tablePostcodeAreas = new TableGateway('postcode_areas', $databaseAdapter);
         $tablePostcodeOutwards = new TableGateway('postcode_outwards', $databaseAdapter);
@@ -51,6 +52,16 @@ class OnsPrepareCommand extends Command
         // cached external
         $cachedPostcodeAreas = array();
         $cachedPostcodeOutwards = array();
+
+        $areas = $tablePostcodeAreas->select();
+        while (($area = $areas->current())) {
+            $cachedPostcodeAreas[] = $area->postcode_area;
+        }
+
+        $outwards = $tablePostcodeOutwards->select();
+        while (($outward = $outwards->current())) {
+            $cachedPostcodeOutwards[] = $outward->postcode_outward;
+        }
 
         // TODO: All or just BT
         $files = glob(POSTCODE_TMP_DIR.'/Data/'.POSTCODE_ONS_PREFIX.'*');
@@ -90,26 +101,30 @@ class OnsPrepareCommand extends Command
                 }
 
                 if (!in_array($postcode->getPostcodeArea(), $cachedPostcodeAreas)) {
-//                    $tablePostcodeAreas->insert(array(
-//                        'postcode_area' => $postcode->getPostcodeArea(),
-//                    ));
+                    $tablePostcodeAreas->insert(array(
+                        'postcode_area' => $postcode->getPostcodeArea(),
+                    ));
                     $cachedPostcodeAreas[] = $postcode->getPostcodeArea();
                 }
 
                 if (!in_array($postcode->getPostcodeOutward(), $cachedPostcodeOutwards)) {
-                    $outwardPart = str_replace($postcode->getPostcodeOutward(), $postcode->getPostcodeArea(),'');
-//                    $tablePostcodeOutwards->insert(array(
-//                        'postcode_area' => $postcode->getPostcodeArea(),
-//                        'postcode_outward' => $postcode->getPostcodeOutward(),
-//                        'outward_part' => $outwardPart
-//                    ));
+                    $outwardPart = str_replace(
+                        $postcode->getPostcodeArea(),
+                        '',
+                        $postcode->getPostcodeOutward()
+                    );
+                    $tablePostcodeOutwards->insert(array(
+                        'postcode_area' => $postcode->getPostcodeArea(),
+                        'postcode_outward' => $postcode->getPostcodeOutward(),
+                        'outward_part' => $outwardPart
+                    ));
                     $cachedPostcodeOutwards[] = $postcode->getPostcodeOutward();
                 }
 
                 $tablePostcodes->insert(array(
                     'postcode' => $postcode->getPostcode(),
-//                'postcode_area' => $postcode->getPostcodeArea(),
-//                'postcode_outward' => $postcode->getPostcodeOutward(),
+                    'postcode_area' => $postcode->getPostcodeArea(),
+                    'postcode_outward' => $postcode->getPostcodeOutward(),
                     'eastings' => $row[9],
                     'northings' => $row[10]
                 ));

@@ -9,13 +9,17 @@ if (!defined('POSTCODE_ONS_URL')) {
 }
 
 if (!defined('POSTCODE_ONS_PREFIX')) {
-    define('POSTCODE_ONS_PREFIX', 'ONSPD_FEB_2015');
+    define('POSTCODE_ONS_PREFIX', 'ONSPD_AUG_2015');
+}
+
+if (!defined('POSTCODE_ONS_SUFFIX')) {
+    define('POSTCODE_ONS_SUFFIX', '_csv.zip');
 }
 
 if (!defined('POSTCODE_ONS_FILE')) {
-    define('POSTCODE_ONS_FILE', POSTCODE_ONS_PREFIX.'_multi_csv.zip');
+    define('POSTCODE_ONS_FILE', POSTCODE_ONS_PREFIX . POSTCODE_ONS_SUFFIX);
 }
 
 if (!defined('POSTCODE_ONS_FILE_SHA1')) {
-    define('POSTCODE_ONS_FILE_SHA1', '879589c0b8e83650e8708ffce6137a473b0c122c');
+    define('POSTCODE_ONS_FILE_SHA1', '9844b9eb4d649ebff4272cd16d7a63b489f45557');
 }
