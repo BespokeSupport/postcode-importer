@@ -3,3 +3,5 @@
 WORK IN PROGRESS
 
 Importer for Ordnance Survey CodePoint Open + ONSPD
+
+Primary = ONS
