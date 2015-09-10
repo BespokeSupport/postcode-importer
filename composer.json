@@ -1,5 +1,5 @@
 {
-  "name": "bespoke-support/os-postcode-import",
+  "name": "bespoke-support/postcode-importer",
   "description": "Importer for Postcode Database",
   "license": "MIT",
   "authors": [
