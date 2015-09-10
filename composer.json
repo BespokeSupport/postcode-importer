@@ -19,7 +19,7 @@
     "zendframework/zend-db": "2.3.4",
     "zendframework/zend-eventmanager": "2.3.4",
     "php-coord/php-coord": "~1",
-    "bespoke-support/location": "0.1",
-    "bespoke-support/osgb-tools": "0.2"
+    "bespoke-support/location": "@dev",
+    "bespoke-support/osgb-tools": "@dev"
   }
 }
