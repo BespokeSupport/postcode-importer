@@ -16,11 +16,11 @@
   "minimum-stability": "dev",
   "require": {
     "symfony/console": "~2.6",
-    "kriswallsmith/buzz": "~0.13",
-    "zendframework/zend-db": "~2.3.4",
-    "zendframework/zend-eventmanager": "~2.3.4",
+    "kriswallsmith/buzz": "~0.15",
+    "zendframework/zend-db": "~2.3",
+    "zendframework/zend-eventmanager": "~2.3",
     "php-coord/php-coord": "~1",
-    "bespoke-support/location": "dev-master",
-    "bespoke-support/osgb-tools": "dev-master"
+    "bespoke-support/location": "@dev",
+    "bespoke-support/osgb-tools": "@dev"
   }
 }
