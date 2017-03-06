@@ -6,6 +6,7 @@ use Buzz\Browser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 class CpoDownloadCommand extends Command
 {
@@ -19,8 +20,8 @@ class CpoDownloadCommand extends Command
     {
         $output->writeln('<info>Starting OS ZIP Download</info>');
 
-        $dialog = $this->getHelper('dialog');
-        $url = trim($dialog->ask($output, '<info>Please enter the URL send by OS: </info>'));
+        $question = $this->getHelper('question');
+        $url = trim($question->ask($input, $output, new Question('<info>Please enter the URL send by OS: </info>')));
 
         if (!$url || !($parsedUrl = parse_url($url)) || !isset($parsedUrl['path'])) {
             $output->writeln("<error>URL not given</error>");

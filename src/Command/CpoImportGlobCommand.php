@@ -2,9 +2,11 @@
 
 namespace BespokeSupport\OSImporter\Command;
 
+use BespokeSupport\Location\Postcode;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -20,14 +22,21 @@ class CpoImportGlobCommand extends Command
     {
         $output->writeln('<info>Starting Import CSV</info>');
 
-        $dir = dirname(__FILE__).'/../Data/CSV/';
+        $dir = dirname(__DIR__) . '/../Data/CSV/';
 
-        $files = glob($dir.'*.csv');
+        $files = glob($dir . '*.csv');
+
+        $question = $this->getHelper('question');
+
+        $databaseUser = trim($question->ask($input, $output, new Question('<info>Database User : </info>')));
+        $databasePass = trim($question->ask($input, $output, new Question('<info>Database Pass : </info>')));
+        $databaseName = trim($question->ask($input, $output, new Question('<info>Database Name : </info>')));
 
         $databaseAdapter = new Adapter([
             'driver' => 'Pdo_Mysql',
-            'dbname' => 'locations',
-            'username' => 'root'
+            'dbname' => $databaseName,
+            'username' => $databaseUser,
+            'password' => $databasePass,
         ]);
 
         $table = new TableGateway('postcodes', $databaseAdapter);
@@ -44,8 +53,10 @@ class CpoImportGlobCommand extends Command
 
                 if (!count($row) || !$row[0]) continue;
 
+                $psString = str_replace(' ', '', $row[0]);
+
                 $table->insert([
-                    'postcode' => str_replace(' ', '', $row[0]),
+                    'postcode' => $psString,
                     'eastings' => $row[2],
                     'northings' => $row[3]
                 ]);

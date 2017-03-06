@@ -13,14 +13,14 @@
       "BespokeSupport\\OSImporter\\": ["src/"]
     }
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "require": {
-    "symfony/console": "~2|~3",
-    "kriswallsmith/buzz": "~0.15",
-    "zendframework/zend-db": "~2.3",
-    "zendframework/zend-eventmanager": "~2.3",
-    "php-coord/php-coord": "~1",
-    "bespoke-support/location": "@dev",
-    "bespoke-support/osgb-tools": "@dev"
+    "symfony/console": "3.*",
+    "kriswallsmith/buzz": "0.*",
+    "zendframework/zend-db": "2.6.*",
+    "zendframework/zend-eventmanager": "2.6.*",
+    "php-coord/php-coord": "1.*",
+    "bespoke-support/location": "@stable",
+    "bespoke-support/osgb-tools": "@stable"
   }
 }
