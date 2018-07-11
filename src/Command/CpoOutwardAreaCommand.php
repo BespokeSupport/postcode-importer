@@ -3,6 +3,7 @@
 namespace BespokeSupport\OSImporter\Command;
 
 use BespokeSupport\Location\Postcode;
+use PHPCoord\OSRef;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,7 +37,8 @@ class CpoOutwardAreaCommand extends Command
         ]);
 
         $table = new TableGateway('postcodes', $databaseAdapter);
-        $tableOutward = new TableGateway('postcode_outward', $databaseAdapter);
+        $tableOutward = new TableGateway('postcode_outwards', $databaseAdapter);
+        $tableArea = new TableGateway('postcode_areas', $databaseAdapter);
 
         $rows = $table->select();
 
@@ -44,6 +46,9 @@ class CpoOutwardAreaCommand extends Command
 
         $count = 0;
         $connection->beginTransaction();
+
+        $outwards = [];
+        $areas = [];
         foreach ($rows as $row) {
 
             $postcodeObject = new Postcode($row->postcode);
@@ -51,9 +56,19 @@ class CpoOutwardAreaCommand extends Command
             $outward = $postcodeObject->getPostcodeOutward();
             $area = $postcodeObject->getPostcodeArea();
 
-            $outwardRow = $tableOutward->select(['postcode_outward' => $outward])->current();
+            if (!in_array($area, $areas)) {
+                $output->writeln("<info>New Area: $area</info>");
+                $tableArea->insert(
+                    [
+                        'postcode_area' => $area,
+                    ]
+                );
+                $areas[] = $area;
+                $connection->commit();
+                $connection->beginTransaction();
+            }
 
-            if (!$outwardRow) {
+            if (!in_array($outward, $outwards)) {
                 $output->writeln("<info>New Outward: $outward</info>");
                 $tableOutward->insert(
                     [
@@ -63,14 +78,21 @@ class CpoOutwardAreaCommand extends Command
                         'updated' => 1
                     ]
                 );
+                $outwards[] = $outward;
                 $connection->commit();
                 $connection->beginTransaction();
             }
 
+            $gb = new OSRef($row->eastings, $row->northings);
+            $latLng = $gb->toLatLng();
+            $latLng->OSGB36ToWGS84();
+
             $table->update(
                 [
                     'postcode_area' => $postcodeObject->getPostcodeArea(),
-                    'postcode_outward' => $postcodeObject->getPostcodeOutward()
+                    'postcode_outward' => $postcodeObject->getPostcodeOutward(),
+                    'latitude' => $latLng->lat,
+                    'longitude' => $latLng->lng
                 ],
                 [
                     'postcode' => $postcodeObject->getPostcode()

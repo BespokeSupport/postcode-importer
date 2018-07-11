@@ -22,7 +22,7 @@ class OnsPrepareCommand extends Command
     {
         $onsFile = POSTCODE_TMP_DIR.'/'.POSTCODE_ONS_FILE;
 
-        if (!file_exists($onsFile) || POSTCODE_ONS_FILE_SHA1 != sha1_file($onsFile)) {
+        if (!file_exists($onsFile)) {
             $output->writeln('<info>Starting ONS ZIP Download</info>');
             $client = new Browser();
             $response = $client->get(POSTCODE_ONS_URL.POSTCODE_ONS_FILE);
@@ -30,7 +30,8 @@ class OnsPrepareCommand extends Command
             $output->writeln('<info>Ending ONS ZIP Download</info>');
         }
 
-        if (!file_exists(str_replace(POSTCODE_ONS_SUFFIX, '_UK_metadata.xml',$onsFile))){
+        $multiFile = POSTCODE_TMP_DIR . '/Data/' . POSTCODE_ONS_PREFIX .'_UK.csv';
+        if (!file_exists($multiFile)){
             $output->writeln("<info>Extracting $onsFile</info>");
             $zip = new \ZipArchive();
             $zip->open($onsFile);
@@ -40,9 +41,10 @@ class OnsPrepareCommand extends Command
         // database connection
         $databaseAdapter = new Adapter([
             'driver' => 'Pdo_Mysql',
-            'dbname' => 'information',
-            'username' => 'root'
+            'dbname' => 'test',
+            'username' => 'dev'
         ]);
+
 
         $tablePostcodes = new TableGateway('postcodes', $databaseAdapter);
         $tablePostcodeAreas = new TableGateway('postcode_areas', $databaseAdapter);
@@ -53,20 +55,22 @@ class OnsPrepareCommand extends Command
         $cachedPostcodeAreas = array();
         $cachedPostcodeOutwards = array();
 
-        $areas = $tablePostcodeAreas->select();
-        while (($area = $areas->current())) {
-            $cachedPostcodeAreas[] = $area->postcode_area;
+        $output->writeln("<info>Areas</info>");
+        $areas = $tablePostcodeAreas->select()->toArray();
+        foreach ($areas as $area) {
+            $cachedPostcodeAreas[] = $area['postcode_area'];
         }
 
-        $outwards = $tablePostcodeOutwards->select();
-        while (($outward = $outwards->current())) {
-            $cachedPostcodeOutwards[] = $outward->postcode_outward;
+        $output->writeln("<info>Outwards</info>");
+        $outwards = $tablePostcodeOutwards->select()->toArray();
+        foreach ($outwards as $outward) {
+            $cachedPostcodeOutwards[] = $outward['postcode_outward'];
         }
 
-        // TODO: All or just BT
-        $files = glob(POSTCODE_TMP_DIR.'/Data/'.POSTCODE_ONS_PREFIX.'*');
-//        $files  = array(POSTCODE_TMP_DIR.'/Data/'.POSTCODE_ONS_PREFIX.'_UK_BT.csv');
+        $output->writeln("<info>Files</info>");
 
+        $path = POSTCODE_TMP_DIR.'/Data/multi_csv/'.POSTCODE_ONS_PREFIX.'_UK_{BT,GY,IM,JE}.csv';
+        $files = glob($path, GLOB_BRACE);
         foreach ($files as $file) {
 
             $connection->beginTransaction();
@@ -121,13 +125,18 @@ class OnsPrepareCommand extends Command
                     $cachedPostcodeOutwards[] = $postcode->getPostcodeOutward();
                 }
 
-                $tablePostcodes->insert(array(
-                    'postcode' => $postcode->getPostcode(),
-                    'postcode_area' => $postcode->getPostcodeArea(),
-                    'postcode_outward' => $postcode->getPostcodeOutward(),
-                    'eastings' => $row[9],
-                    'northings' => $row[10]
-                ));
+                try {
+                    $tablePostcodes->insert(array(
+                        'postcode' => $postcode->getPostcode(),
+                        'postcode_area' => $postcode->getPostcodeArea(),
+                        'postcode_outward' => $postcode->getPostcodeOutward(),
+                        'latitude' => $row[51],
+                        'longitude' => $row[52],
+                        'eastings' => $row[9],
+                        'northings' => $row[10]
+                    ));
+                } catch (\Exception $e) {}
+
 
                 if ($count % 5000 == 0) {
                     $output->writeln("\t $count");

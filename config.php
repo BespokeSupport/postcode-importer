@@ -9,7 +9,7 @@ if (!defined('POSTCODE_ONS_URL')) {
 }
 
 if (!defined('POSTCODE_ONS_PREFIX')) {
-    define('POSTCODE_ONS_PREFIX', 'ONSPD_AUG_2015');
+    define('POSTCODE_ONS_PREFIX', 'ONSPD_NOV_2017');
 }
 
 if (!defined('POSTCODE_ONS_SUFFIX')) {
